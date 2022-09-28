@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/cursor.ico</file>
+        <file>icons/move.ico</file>
+        <file>icons/rotate.ico</file>
+        <file>icons/sun.ico</file>
+        <file>icons/torch.ico</file>
+        <file>icons/cube.ico</file>
+        <file>icons/cylinder.ico</file>
+        <file>icons/sphere.ico</file>
+    </qresource>
+</RCC>
