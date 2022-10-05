@@ -4,12 +4,17 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QVector>
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions_3_3_CORE>
+
 #include "models/GraphicModel"
 #include "Shader.h"
 #include "Camera.h"
+#include "ModelManager.h"
+#include "TextureManager.h"
 
 class PreviewWidget : public QOpenGLWidget
 {
@@ -17,6 +22,32 @@ class PreviewWidget : public QOpenGLWidget
 public:
     PreviewWidget(QWidget *parent = nullptr, Qt::WindowFlags flag = Qt::WindowFlags());
     ~PreviewWidget();
+    template<typename Derived>
+    void addModel(gm::BaseModel<Derived> & model)
+    {
+        mManager.addModel(&model);
+        bindBuffer();
+        update();
+    }
+    std::vector<ModelObject> * getModelVector()
+    {
+        return mManager.getModelVector();
+    }
+    ModelObject * getModelById(unsigned int id)
+    {
+        return mManager.getModelObjById(id);
+    }
+    void changeModelTexture(unsigned int id, unsigned int textureIndex, std::string filepath)
+    {
+        mManager.changeModelTexture(id, textureIndex, filepath);
+    }
+    QPair<QString, int> addTexture(QString filepath)
+    {
+        filepath = tManager.addTexture(filepath);
+        unsigned int index = -1;
+        if (filepath != "") index = tManager.getTextureIndex(filepath);
+        return QPair<QString, int>(filepath, index);
+    }
 
 protected:
     virtual void initializeGL() override;
@@ -31,14 +62,20 @@ private:
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
-    GraphicModel::Cube<float> cube;
     QOpenGLFunctions_3_3_Core * f;
     Shader shader;
     Camera camera;
-    float width;
-    float height;
+    //QOpenGLShaderProgram program;
+    
     Qt::MouseButton mousePressButton;
     QPoint point;
+    ModelManager mManager;
+    TextureManager tManager;
+    void bindBuffer();
+    void drawAxis();
+    void drawZ0Plane();
+    void drawModel(ModelObject & model);
+    void drawBoundingBox();
 };
 
 #endif // PREVIEWWIDGET_H

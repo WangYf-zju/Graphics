@@ -16,16 +16,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ui/modeladddlg.cpp \
+    ui/content.cpp \
+    ui/mainwindow.cpp \
+    ui/propertieswidget.cpp \
     main.cpp \
-    mainwindow.cpp \
-    previewwidget.cpp
+    previewwidget.cpp \
 
 HEADERS += \
-    mainwindow.h \
-    previewwidget.h
+    ui/modeladddlg.h \
+    ui/content.h \
+    ui/mainwindow.h \
+    ui/propertieswidget.h \
+    previewwidget.h \
+    controls.h \
+    ModelManager.h \
+    TextureManager.h \
+    Camera.h \
+    Shader.h \
 
 FORMS += \
-    mainwindow.ui
+    ui/modeladddlg.ui \
+    ui/content.ui \
+    ui/mainwindow.ui \
+    ui/propertieswidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -33,4 +47,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    resources.qrc
+    ui/resources.qrc
+
+DISTFILES +=
+

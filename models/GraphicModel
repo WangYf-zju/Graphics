@@ -1,6 +1,9 @@
 #ifndef GRAPHICMODEL_H
 #define GRAPHICMODEL_H
 
+#include <stdlib.h>
+#include <cmath>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -8,5 +11,7 @@
 #include "ForwardDeclarations.h"
 #include "BaseModel.h"
 #include "Cube.h"
+//#include "Cylinder.h"
+#include "Sphere.h"
 
 #endif

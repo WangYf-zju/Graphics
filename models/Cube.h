@@ -1,7 +1,7 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-namespace GraphicModel {
+namespace gm {
 /*
  *      (x2, y2, z1) 3 ________ 0 (x1, y2, z1)
  *                    /|      /|
@@ -23,55 +23,105 @@ public:
     Cube(Scalar x, Scalar y, Scalar z, Scalar l, Scalar w, Scalar h)
         : BaseModel()
     {
-        this->_x = x > 0 ? x : 1;
-        this->_y = y > 0 ? y : 1;
-        this->_z = z > 0 ? z : 1;
-        this->_l = l > 0 ? l : 1;
-        this->_w = w > 0 ? w : 1;
-        this->_h = h > 0 ? h : 1;
-        updateVertex(x, y, z, l, w, h);
+        this->type = MODEL_CUBE;
+        //if (!_isInit) init();
+        this->_l = l > 0 ? l : (_Scalar)1;
+        this->_w = w > 0 ? w : (_Scalar)1;
+        this->_h = h > 0 ? h : (_Scalar)1;
+        scaleTo(_l, _w, _h);
+        translate(x, y, z);
     }
-    int vertexSize() override { return sizeof(_vertex); }
-    int indicesSize() override { return sizeof(indices); }
-    Scalar * getVertex() override { return _vertex; }
-    int * getIndices() override { return indices; }
+    constexpr size_t vertexSize() override { return sizeof(_vertex); }
+    constexpr size_t indicesSize() override { return 0; }
+    inline _Scalar * getVertex() override { return _vertex; }
+    inline unsigned int * getIndices() override { return nullptr; }
 
 private:
-    void updateVertex(Scalar x, Scalar y, Scalar z, Scalar l, Scalar w, Scalar h)
-    {
-        const Scalar x1 = x + l / 2.0;
-        const Scalar x2 = x - l / 2.0;
-        const Scalar y1 = y + w / 2.0;
-        const Scalar y2 = y - w / 2.0;
-        const Scalar z1 = z + h / 2.0;
-        const Scalar z2 = z - h / 2.0;
-        _vertex[0] = _vertex[3] = _vertex[12] = _vertex[15] = x1;
-        _vertex[6] = _vertex[9] = _vertex[18] = _vertex[21] = x2;
-        _vertex[4] = _vertex[7] = _vertex[16] = _vertex[19] = y1;
-        _vertex[1] = _vertex[10] = _vertex[13] = _vertex[22] = y2;
-        _vertex[2] = _vertex[5] = _vertex[8] = _vertex[11] = z1;
-        _vertex[14] = _vertex[17] = _vertex[20] = _vertex[23] = z2;
-    }
+    //static void init()
+    //{
+    //    const _Scalar x1 = + (_Scalar)0.5;
+    //    const _Scalar x2 = - (_Scalar)0.5;
+    //    const _Scalar y1 = + (_Scalar)0.5;
+    //    const _Scalar y2 = - (_Scalar)0.5;
+    //    const _Scalar z1 = + (_Scalar)0.5;
+    //    const _Scalar z2 = - (_Scalar)0.5;
+    //    _vertex[5*0+0] = _vertex[5*1+0] = _vertex[5*4+0] = _vertex[5*5+0] = x1;
+    //    _vertex[5*2+0] = _vertex[5*3+0] = _vertex[5*6+0] = _vertex[5*7+0] = x2;
+    //    _vertex[5*1+1] = _vertex[5*2+1] = _vertex[5*5+1] = _vertex[5*6+1] = y1;
+    //    _vertex[5*0+1] = _vertex[5*3+1] = _vertex[5*4+1] = _vertex[5*7+1] = y2;
+    //    _vertex[5*0+2] = _vertex[5*1+2] = _vertex[5*2+2] = _vertex[5*3+2] = z1;
+    //    _vertex[5*4+2] = _vertex[5*5+2] = _vertex[5*6+2] = _vertex[5*7+2] = z2;
+    //    for (int i = 0; i < 36; i++) _indices[i] = i;
+    //}
     Scalar _l, _w, _h;
-    Scalar _vertex[24];
-    static int indices[36];
+    static _Scalar _vertex[36*5];
+    //static bool _isInit;
 };
 
-template<typename Scalar>
-int Cube<Scalar>::indices[36] = {
-    0, 1, 3,
-    1, 2, 3,
-    0, 1, 4,
-    1, 4, 5,
-    0, 3, 4,
-    3, 4, 7,
-    2, 3, 6,
-    3, 6, 7,
-    4, 5, 6,
-    4, 6, 7,
-    1, 2, 5,
-    2, 5, 6,
+//template<typename _Scalar>
+//unsigned int Cube<_Scalar>::_indices[36] = {
+//    0, 1, 3,
+//    1, 2, 3,
+//    0, 1, 4,
+//    1, 4, 5,
+//    0, 3, 4,
+//    3, 4, 7,
+//    2, 3, 6,
+//    3, 6, 7,
+//    4, 5, 6,
+//    4, 6, 7,
+//    1, 2, 5,
+//    2, 5, 6,
+//};
+
+
+template<typename _Scalar>
+_Scalar Cube<_Scalar>::_vertex[] = {
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)0.0,
+
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
 };
+
+//template<typename _Scalar>
+//bool Cube<_Scalar>::_isInit = false;
 
 template<typename _Scalar>
 struct traits<Cube<_Scalar>>
@@ -79,13 +129,7 @@ struct traits<Cube<_Scalar>>
 public:
     typedef _Scalar Scalar;
 };
-template<>
-struct traits<Cube<int>>
-{
-public:
-    typedef int Scalar;
-};
 
-} // namespace GraphicModel
+} // namespace gm
 
 #endif // !__CUBE_H__

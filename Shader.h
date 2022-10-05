@@ -1,4 +1,4 @@
-/* This file is copied from 
+/* This file references from 
  * https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_m.h
  */
 
