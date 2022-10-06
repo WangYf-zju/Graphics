@@ -19,9 +19,9 @@ template<typename _Scalar>
 class Cube : public BaseModel<Cube<_Scalar>>
 {
 public:
-    template<typename Scalar>
-    Cube(Scalar x, Scalar y, Scalar z, Scalar l, Scalar w, Scalar h)
-        : BaseModel()
+    template<typename _Scalar>
+    Cube(_Scalar x, _Scalar y, _Scalar z, _Scalar l, _Scalar w, _Scalar h)
+        : BaseModel<Cube<_Scalar>>()
     {
         this->type = MODEL_CUBE;
         //if (!_isInit) init();
@@ -54,7 +54,7 @@ private:
     //    for (int i = 0; i < 36; i++) _indices[i] = i;
     //}
     Scalar _l, _w, _h;
-    static _Scalar _vertex[36*5];
+    static _Scalar _vertex[36*EACH_VERTEX_SIZE];
     //static bool _isInit;
 };
 
@@ -77,47 +77,47 @@ private:
 
 template<typename _Scalar>
 _Scalar Cube<_Scalar>::_vertex[] = {
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)0.0,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar)-0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)1.0, (_Scalar)1.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar) 0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)1.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar) 0.5,  (_Scalar)0.0, (_Scalar)0.0,
-    (_Scalar)-0.5, (_Scalar) 0.5, (_Scalar)-0.5,  (_Scalar)0.0, (_Scalar)1.0,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
 //template<typename _Scalar>

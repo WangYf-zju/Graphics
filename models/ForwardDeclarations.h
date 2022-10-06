@@ -3,7 +3,7 @@
 
 namespace gm
 {
-#define EACH_VERTEX_SIZE 5
+#define EACH_VERTEX_SIZE 8
 #define PI 3.1415926
 
 template<typename T> struct traits;

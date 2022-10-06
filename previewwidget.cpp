@@ -121,9 +121,9 @@ void PreviewWidget::bindBuffer()
     f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     f->glBufferData(GL_ARRAY_BUFFER, mManager.asize(), mManager.adata(), GL_STATIC_DRAW);
     f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mManager.esize(), mManager.edata(), GL_STATIC_DRAW);
-    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, EACH_VERTEX_SIZE * sizeof(float), (void*)0);
     f->glEnableVertexAttribArray(0);
-    f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+    f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, EACH_VERTEX_SIZE * sizeof(float), (void*)(6*sizeof(float)));
     f->glEnableVertexAttribArray(1);
     f->glUniform1i(f->glGetUniformLocation(shader.ID, "t"), 0);
 }

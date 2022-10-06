@@ -14,9 +14,9 @@
 #define Y_AXIS_VERTEX_COUNT 2
 #define Z_AXIS_VERTEX_START 4
 #define Z_AXIS_VERTEX_COUNT 2
-#define BOUNDING_BOX_VERTEX_START 24
+#define BOUNDING_BOX_VERTEX_START (6 * sizeof(float))
 #define BOUNDING_BOX_VERTEX_COUNT 24
-#define Z0_PLANE_VERTEX_START 120
+#define Z0_PLANE_VERTEX_START (30 * sizeof(float))
 #define Z0_PLANE_SIZE 5
 #define Z0_PLANE_VERTEX_COUNT (Z0_PLANE_SIZE * 8 + 4)
 
@@ -196,12 +196,12 @@ private:
     void addAxisVertex()
     {
         float axisVertex[] = {
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            1000.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1000.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1000.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         };
         _vertexBuffer.insert(_vertexBuffer.end(), axisVertex, axisVertex + sizeof(axisVertex));
     }
@@ -213,56 +213,56 @@ private:
             _vertexBuffer.push_back((float)x);
             _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)-Z0_PLANE_SIZE);
-            _vertexBuffer.push_back(0.0f);
-            _vertexBuffer.push_back(0.0f);
+            for (int i = 3; i < EACH_VERTEX_SIZE; i++)
+                _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)x);
             _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)Z0_PLANE_SIZE);
-            _vertexBuffer.push_back(0.0f);
-            _vertexBuffer.push_back(0.0f);
+            for (int i = 3; i < EACH_VERTEX_SIZE; i++)
+                _vertexBuffer.push_back(0.0f);
         }
         for (int z = -5; z <= 5; z++)
         {
             _vertexBuffer.push_back((float)-Z0_PLANE_SIZE);
             _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)z);
-            _vertexBuffer.push_back(0.0f);
-            _vertexBuffer.push_back(0.0f);
+            for (int i = 3; i < EACH_VERTEX_SIZE; i++)
+                _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)Z0_PLANE_SIZE);
             _vertexBuffer.push_back(0.0f);
             _vertexBuffer.push_back((float)z);
-            _vertexBuffer.push_back(0.0f);
-            _vertexBuffer.push_back(0.0f);
+            for (int i = 3; i < EACH_VERTEX_SIZE; i++)
+                _vertexBuffer.push_back(0.0f);
         }
     }
 
     void addBoundingBoxVertex()
     {
         float boxVertex[] = {
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         };
         _vertexBuffer.insert(_vertexBuffer.end(), boxVertex, boxVertex + sizeof(boxVertex));
     }

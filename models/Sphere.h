@@ -43,9 +43,15 @@ private:
                 Scalar sx = std::sin(i * (Scalar)2.0 * (Scalar)PI / (Scalar)SEGX);
                 Scalar cy = std::cos(j * (Scalar)PI / (Scalar)SEGY);
                 Scalar sy = std::sin(j * (Scalar)PI / (Scalar)SEGY);
-                _vertex[index++] = cx * sy / (Scalar)2;
-                _vertex[index++] = cy / (Scalar)2;
-                _vertex[index++] = sx * sy / (Scalar)2;
+                Scalar x = cx * sy / (Scalar)2;
+                Scalar y = cy / (Scalar)2;
+                Scalar z = sx * sy / (Scalar)2;
+                _vertex[index++] = x;
+                _vertex[index++] = y;
+                _vertex[index++] = z;
+                _vertex[index++] = x;
+                _vertex[index++] = y;
+                _vertex[index++] = z;
                 _vertex[index++] = (Scalar)i / (Scalar)SEGX;
                 _vertex[index++] = (Scalar)j / (Scalar)SEGY;
             }
