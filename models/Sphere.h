@@ -9,12 +9,14 @@ class Sphere : public BaseModel<Sphere<_Scalar>>
 public:
     typedef _Scalar Scalar;
 	template<typename Scalar>
-	Sphere(Scalar x, Scalar y, Scalar z, Scalar d)
+	Sphere(Scalar x, Scalar y, Scalar z, Scalar d,
+        Scalar pitch = 0, Scalar yaw = 0, Scalar roll = 0)
 		:BaseModel()
 	{
         this->type = MODEL_SPHERE;
         if (!_isInit) init();
         translate(x, y, z);
+        rotateTo(pitch, yaw, roll);
         this->_d = d > 0 ? d : (Scalar)1;
         scaleTo(_d, _d, _d);
 	}

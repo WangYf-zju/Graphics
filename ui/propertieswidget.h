@@ -7,6 +7,7 @@
 
 #include "ModelManager.h"
 #include "LightManager.h"
+#include "modeladddlg.h"
 
 namespace Ui {
 class ModelPropWidget;
@@ -31,9 +32,11 @@ signals:
 private:
     Ui::ModelPropWidget *ui;
     ModelObject modelTemp;
+    ModelAddDlg transDlg;
     void colorPreview(int r, int g, int b);
     void changeColor();
     void blockSignals(bool b);
+    glm::mat4 calcModelMatrix(float *);
 };
 
 class LightPropWidget : public QWidget

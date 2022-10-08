@@ -30,25 +30,6 @@ public:
         bindBuffer();
         update();
     }
-    std::vector<ModelObject> * getModelVector()
-    {
-        return mManager.getModelVector();
-    }
-    ModelObject * getModelById(unsigned int id)
-    {
-        return mManager.getModelObjById(id);
-    }
-    void changeModelTexture(unsigned int id, unsigned int textureIndex, std::string filepath)
-    {
-        mManager.changeModelTexture(id, textureIndex, filepath);
-    }
-    QPair<QString, int> addTexture(QString filepath)
-    {
-        filepath = tManager.addTexture(filepath);
-        unsigned int index = -1;
-        if (filepath != "") index = tManager.getTextureIndex(filepath);
-        return QPair<QString, int>(filepath, index);
-    }
     ModelManager * getModelManager() { return &mManager; }
     TextureManager * getTextureManager() { return &tManager; }
     LightManager * getLightManager() { return &lManager; }

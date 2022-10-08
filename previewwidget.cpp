@@ -14,7 +14,6 @@ PreviewWidget::PreviewWidget(QWidget *parent, Qt::WindowFlags flag)
     //mManager.addModel(new gm::Sphere<float>(0.0f, 0.0f, 0.0f, 1.0f));
     mManager.addModel(new gm::Cube<float>(2.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));
     mManager.addModel(new gm::Cylinder<float>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f));
-
 }
 
 PreviewWidget::~PreviewWidget()
@@ -86,7 +85,7 @@ void PreviewWidget::resizeGL(int w, int h)
 void PreviewWidget::wheelEvent(QWheelEvent * event)
 {
     int d = event->delta();
-    camera.zoom((float)d * 0.005);
+    camera.zoom((float)d * 0.008);
     update();
 }
 
@@ -110,12 +109,12 @@ void PreviewWidget::mouseReleaseEvent(QMouseEvent *event)
 void PreviewWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (this->mousePressButton == Qt::NoButton) return;
-    int dx = -event->pos().x() + this->point.x();
-    int dy = -event->pos().y() + this->point.y();
+    int dx = event->pos().x() - this->point.x();
+    int dy = event->pos().y() - this->point.y();
     this->point = event->pos();
     if (this->mousePressButton == Qt::LeftButton)
     {
-        camera.translate((float)dx*0.005, (float)dy*0.005);
+        camera.translate((float)dx*0.008, (float)dy*0.008);
         update();
     }
     else if (this->mousePressButton == Qt::MiddleButton)
@@ -124,7 +123,7 @@ void PreviewWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else if (this->mousePressButton == Qt::RightButton) 
     {
-        camera.rotate(-(float)dx*0.05, (float)dy*0.05);
+        camera.rotate((float)dx*0.08, -(float)dy*0.08);
         update();
     }
 }

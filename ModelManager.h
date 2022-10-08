@@ -210,6 +210,15 @@ public:
         }
     }
 
+    void updateModelObject(ModelObject * model)
+    {
+        if (model != nullptr)
+        {
+            ModelObject * old = getModelObjById(model->id);
+            if (old != nullptr) *old = *model;
+        }
+    }
+
     void save_json_file(QString filename)
     {
         //保存顶点坐标信息
@@ -226,6 +235,7 @@ public:
                 a.append(m.modelTrans[j]);
             }
             model.insert("inf", a);
+            model.insert("visible", m.visible);
             model.insert("type", m.type);
             model.insert("texture", QString::fromStdString(m.texture));
             model.insert("specular", m.specular);
@@ -278,25 +288,48 @@ public:
                 QJsonValue type = model.value("type");
                 QJsonValue texture = model.value("texture");
                 QJsonValue specular = model.value("specular");
-                t->addTexture(texture.toString());
+                QJsonValue visible = model.value("visible");
+
+                QString texturePath = t->addTexture(texture.toString());
+                int textureIndex = t->getTextureIndex(texturePath);
                 QJsonArray a = arrayvalue.toArray();
                 float inf[9];
                 for (int j = 0; j < a.size(); j++)
                 {
-                    QJsonValue vf = a.at(i);
+                    QJsonValue vf = a.at(j);
                     inf[j] = vf.toDouble();
                 }
                 if (type.toInt() == 0)
                 {
                     this->addModel(new gm::Cube<float>(inf[0], inf[1], inf[2], inf[6], inf[7], inf[8]));
+                    auto m = _models.rbegin();
+                    m->specular = specular.toDouble();
+                    m->texture = texturePath.toStdString();
+                    m->textureIndex = textureIndex;
+                    m->name = name.toString().toStdString();
+                    m->visible = visible.toBool();
+
+
                 }
                 else if (type.toInt() == 2)
                 {
                     this->addModel(new gm::Sphere<float>(inf[0], inf[1], inf[2], inf[8]));
+                    auto m = _models.rbegin();
+                    m->specular = specular.toDouble();
+                    m->texture = texturePath.toStdString();
+                    m->textureIndex = textureIndex;
+                    m->name = name.toString().toStdString();
+                    m->visible = visible.toBool();
                 }
-                else if(type.toInt() == 1)
+                else if (type.toInt() == 1)
                 {
                     this->addModel(new gm::Cylinder<float, 16>(inf[0], inf[1], inf[2], inf[6], inf[7]));
+                    auto m = _models.rbegin();
+                    m->specular = specular.toDouble();
+                    m->texture = texturePath.toStdString();
+                    m->textureIndex = textureIndex;
+                    m->name = name.toString().toStdString();
+                    m->visible = visible.toBool();
                 }
             }
         }

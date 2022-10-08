@@ -52,7 +52,8 @@ Content::Content(QWidget *parent)
     connect(ui->modelList->selectionModel(), &QItemSelectionModel::selectionChanged, this,
         [&](const QItemSelection &, const QItemSelection &) {
         auto selections = ui->modelList->selectionModel()->selectedRows();
-        auto models = ui->openGLWidget->getModelVector();
+        auto manager = ui->openGLWidget->getModelManager();
+        auto models = manager->getModelVector();
         for (int i = 0; i < models->size(); i++)
             models->at(i).select = false;
         for (auto p = selections.begin(); p != selections.end(); p++)
@@ -72,23 +73,21 @@ Content::Content(QWidget *parent)
         showLightInfo();
     });
     connect(ui->modelProp, &ModelPropWidget::modelChanged, this, [&](ModelObject & model) {
-        ModelObject * oldModel = ui->openGLWidget->getModelById(model.id);
-        if (oldModel != nullptr)
-        {
-            *(oldModel) = model;
-            ui->openGLWidget->update();
-        }
+        auto manager = ui->openGLWidget->getModelManager();
+        manager->updateModelObject(&model);
+        ui->openGLWidget->update();
     });
     connect(ui->modelProp, &ModelPropWidget::textureChanged, this, 
         [&](unsigned int id, QString filepath) {
-        auto texture = ui->openGLWidget->addTexture(filepath);
-        filepath = texture.first;
-        int index = texture.second;
-        if (filepath != "")
+        auto tManager = ui->openGLWidget->getTextureManager();
+        auto mManager = ui->openGLWidget->getModelManager();
+        QString texturePath = tManager->addTexture(filepath);
+        int textureIndex = tManager->getTextureIndex(texturePath);
+        if (texturePath != "")
         {
-            ui->openGLWidget->changeModelTexture(id, index, filepath.toStdString());
+            mManager->changeModelTexture(id, textureIndex, filepath.toStdString());
+            ui->modelProp->updateTexture(textureIndex, filepath);
             ui->openGLWidget->update();
-            ui->modelProp->updateTexture(index, filepath);
         }
     });
     connect(ui->lightProp, &LightPropWidget::lightChanged, this, [&](LightObject & light) {
@@ -159,7 +158,7 @@ void Content::showModelInfo(bool hideList)
     // Use ui->modelList->hide() may cause an unexplained bug
     // which changes current selection
     if (hideList) ui->modelList->setMaximumHeight(0);
-    auto models = ui->openGLWidget->getModelVector();
+    auto models = ui->openGLWidget->getModelManager()->getModelVector();
     int row = (selections.end() - 1)->row();
     ui->modelProp->setModel(&(models->at(row)));
     ui->modelProp->show();
@@ -269,17 +268,22 @@ void Content::addModel()
     gm::MODEL_TYPE type = modelMenuAction[curModelAction];
     if (type == gm::MODEL_CUBE)
     {
-        gm::Cube<float> cube(tX, tY, tZ, sX, sY, sZ);
+        gm::Cube<float> cube(tX, tY, tZ, sX, sY, sZ, rX, rY, rZ);
         ui->openGLWidget->addModel(cube);
     }
     else if (type == gm::MODEL_CYLINDER)
     {
-        
+        gm::Cylinder<float> cylinder(tX, tY, tZ, sX, sY, rX, rY, rZ);
+        ui->openGLWidget->addModel(cylinder);
     }
     else if (type == gm::MODEL_SPHERE)
     {
-
+        gm::Sphere<float> sphere(tX, tY, tZ, sX, rX, rY, rZ);
+        ui->openGLWidget->addModel(sphere);
     }
+    ui->modelList->selectionModel()->clearSelection();
+    ui->modelList->selectRow(modelListModel->rowCount() - 1);
+    showModelInfo();
     updateModelList();
 }
 
@@ -289,50 +293,47 @@ void Content::addLight()
     auto type = lightMenuAction[curLightAction];
     if (type == POINT_LIGHT)
     {
-        if (!manager->addLight(type)) QMessageBox::information(
-            this,
-            ADD_TEXT + LIGHT_POINT_TEXT,
-            LIGHT_POINT_TEXT + QString::fromLocal8Bit("数量已达上限"));
+        if (!manager->addLight(type))
+        {
+            QMessageBox::information(
+                this,
+                ADD_TEXT + LIGHT_POINT_TEXT,
+                LIGHT_POINT_TEXT + QString::fromLocal8Bit("数量已达上限"));
+            return;
+        }
     }
     else if (type == SPOT_LIGHT)
     {
-        if (!manager->addLight(type)) QMessageBox::information(
-            this,
-            ADD_TEXT + LIGHT_SPOT_TEXT,
-            LIGHT_SPOT_TEXT + QString::fromLocal8Bit("数量已达上限"));
+        if (!manager->addLight(type))
+        {
+            QMessageBox::information(
+                this,
+                ADD_TEXT + LIGHT_SPOT_TEXT,
+                LIGHT_SPOT_TEXT + QString::fromLocal8Bit("数量已达上限"));
+            return;
+        }
     }
     updateLightList();
+    ui->lightList->selectionModel()->clearSelection();
+    ui->lightList->selectRow(lightListModel->rowCount() - 1);
+    showLightInfo();
     ui->openGLWidget->update();
 }
 
 void Content::showAddModelDlg(gm::MODEL_TYPE modelType)
 {
     if (modelType == gm::MODEL_CUBE)
-    {
-        modelAddDlg.setWindowTitle(ADD_TEXT + MODEL_CUBE_TEXT);
-        modelAddDlg.ui->sY->setEnabled(true);
-        modelAddDlg.ui->sZ->setEnabled(true);
-        modelAddDlg.exec();
-    }
+        modelAddDlg.setCubeMode(ADD_TEXT + MODEL_CUBE_TEXT);
     else if (modelType == gm::MODEL_CYLINDER)
-    {
-        modelAddDlg.setWindowTitle(ADD_TEXT + MODEL_CYLINDER_TEXT);
-        modelAddDlg.ui->sY->setEnabled(true);
-        modelAddDlg.ui->sZ->setEnabled(false);
-        modelAddDlg.exec();
-    }
+        modelAddDlg.setCylinderMode(ADD_TEXT + MODEL_CYLINDER_TEXT);
     else if (modelType == gm::MODEL_SPHERE)
-    {
-        modelAddDlg.setWindowTitle(ADD_TEXT + MODEL_SPHERE_TEXT);
-        modelAddDlg.ui->sY->setEnabled(false);
-        modelAddDlg.ui->sZ->setEnabled(false);
-        modelAddDlg.exec();
-    }
+        modelAddDlg.setSphereMode(ADD_TEXT + MODEL_SPHERE_TEXT);
+    modelAddDlg.exec();
 }
 
 void Content::updateModelList()
 {
-    auto list = ui->openGLWidget->getModelVector();
+    auto list = ui->openGLWidget->getModelManager()->getModelVector();
     modelListModel->removeRows(0, modelListModel->rowCount());
 
     for (int i = 0; i < list->size(); i++)

@@ -26,6 +26,7 @@ struct LightObject {
     glm::vec3 attenuation;
     float cutOff;
     float outerCutOff;
+    glm::mat4 matrix;
 };
 
 class LightManager {
@@ -39,9 +40,9 @@ public:
             true,
             glm::vec3(-0.2f, -1.0f, -0.3f),
             glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.05f, 0.05f, 0.05f),
-            0.5f,
-            0.5f,
+            glm::vec3(1.0f, 1.0f, 1.0f),
+            0.0f,
+            0.0f,
             glm::vec3(0.0f, 0.0f, 0.0f),
             0.0f,
             0.0f,

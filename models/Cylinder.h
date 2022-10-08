@@ -9,12 +9,15 @@ namespace gm {
     public:
         typedef _Scalar Scalar;
         template<typename Scalar>
-        Cylinder(Scalar x, Scalar y, Scalar z, Scalar d, Scalar h)
+        Cylinder(Scalar x, Scalar y, Scalar z, 
+            Scalar d, Scalar h,
+            Scalar pitch = 0, Scalar yaw = 0, Scalar roll = 0)
             :BaseModel()
         {
             this->type = MODEL_CYLINDER;
             if (!_isInit) init();
             translate(x, y, z);
+            rotateTo(pitch, yaw, roll);
             this->_d = d > 0 ? d : (Scalar)1;
             this->_h = h > 0 ? h : (Scalar)1;
             scaleTo(_d, _d, _h);
@@ -85,7 +88,7 @@ namespace gm {
                 _vertex[count++] = 0;
                 
                 _vertex[count++] = 0;
-                _vertex[count++] = 1;
+                _vertex[count++] = -1;
                 _vertex[count++] = 0;
                 _vertex[count++] = (Scalar)i / (Scalar)SEG;
                 _vertex[count++] = (Scalar)0 / (Scalar)3;
@@ -130,7 +133,7 @@ namespace gm {
                 _indices[count++] = i + 1 + SEG + SEG + 2;
                 _indices[count++] = i  + SEG +SEG +2+ SEG+1;
             }
-            for (int i = 0; i <= 2*SEG; i+=2)
+            for (int i = 0; i < 2*SEG; i+=2)
             {
                 _indices[count++] = i + (SEG + SEG + 2)*2;
                 _indices[count++] = i + 1 + (SEG + SEG + 2) * 2;

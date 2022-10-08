@@ -149,9 +149,8 @@ border-right: 5px solid #ccc</string>
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
+    <addaction name="open"/>
+    <addaction name="save"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -184,12 +183,12 @@ border-right: 5px solid #ccc</string>
     <string>新建</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="open">
    <property name="text">
     <string>打开</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="save">
    <property name="text">
     <string>保存</string>
    </property>

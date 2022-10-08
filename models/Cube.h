@@ -20,15 +20,17 @@ class Cube : public BaseModel<Cube<_Scalar>>
 {
 public:
     template<typename _Scalar>
-    Cube(_Scalar x, _Scalar y, _Scalar z, _Scalar l, _Scalar w, _Scalar h)
+    Cube(_Scalar x, _Scalar y, _Scalar z, 
+        _Scalar l, _Scalar w, _Scalar h, 
+        _Scalar pitch = 0, _Scalar yaw = 0, _Scalar roll = 0)
         : BaseModel<Cube<_Scalar>>()
     {
         this->type = MODEL_CUBE;
-        //if (!_isInit) init();
         this->_l = l > 0 ? l : (_Scalar)1;
         this->_w = w > 0 ? w : (_Scalar)1;
         this->_h = h > 0 ? h : (_Scalar)1;
         scaleTo(_l, _w, _h);
+        rotateTo(pitch, yaw, roll);
         translate(x, y, z);
     }
     constexpr size_t vertexSize() override { return sizeof(_vertex); }

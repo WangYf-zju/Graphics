@@ -1,16 +1,48 @@
 #include "propertieswidget.h"
 #include "ui_modelpropwidget.h"
 #include "ui_lightpropwidget.h"
+#include "ui_modeladddlg.h"
 
 ModelPropWidget::ModelPropWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::ModelPropWidget)
+    , transDlg(this)
 {
     ui->setupUi(this);
+    transDlg.setWindowTitle(QString::fromLocal8Bit("ģ�ͱ任"));
     connect(ui->editName, &QLineEdit::textChanged, this, [&](QString name) {
         modelTemp.name = name.toStdString();
         emit modelChanged(modelTemp);
     });
+    connect(ui->btnTrans, &QPushButton::clicked, this, [&]() {
+        transDlg.ui->tX->setValue(modelTemp.modelTrans[0]);
+        transDlg.ui->tY->setValue(modelTemp.modelTrans[1]);
+        transDlg.ui->tZ->setValue(modelTemp.modelTrans[2]);
+        transDlg.ui->rX->setValue(glm::degrees(modelTemp.modelTrans[3]));
+        transDlg.ui->rY->setValue(glm::degrees(modelTemp.modelTrans[4]));
+        transDlg.ui->rZ->setValue(glm::degrees(modelTemp.modelTrans[5]));
+        transDlg.ui->sX->setValue(modelTemp.modelTrans[6]);
+        transDlg.ui->sY->setValue(modelTemp.modelTrans[7]);
+        transDlg.ui->sZ->setValue(modelTemp.modelTrans[8]);
+        transDlg.exec();
+    });
+    connect(transDlg.ui->buttonBox->button(QDialogButtonBox::Ok), 
+        &QPushButton::clicked, this, [&]() {
+        modelTemp.modelTrans[0] = transDlg.ui->tX->value();
+        modelTemp.modelTrans[1] = transDlg.ui->tY->value();
+        modelTemp.modelTrans[2] = transDlg.ui->tZ->value();
+        modelTemp.modelTrans[3] = glm::radians(transDlg.ui->rX->value());
+        modelTemp.modelTrans[4] = glm::radians(transDlg.ui->rY->value());
+        modelTemp.modelTrans[5] = glm::radians(transDlg.ui->rZ->value());
+        modelTemp.modelTrans[6] = transDlg.ui->sX->value();
+        modelTemp.modelTrans[7] = transDlg.ui->sY->value();
+        modelTemp.modelTrans[8] = transDlg.ui->sZ->value();
+        modelTemp.modelMatrix = calcModelMatrix(modelTemp.modelTrans);
+        emit modelChanged(modelTemp);
+        transDlg.close();
+    });
+    connect(transDlg.ui->buttonBox->button(QDialogButtonBox::Cancel),
+        &QPushButton::clicked, this, [&]() { transDlg.close(); });
     connect(ui->btnTrans, &QPushButton::clicked, this, [&]() {});
     connect(ui->spinColorR, &QSpinBox::textChanged, this, [&](QString) { changeColor(); });
     connect(ui->spinColorG, &QSpinBox::textChanged, this, [&](QString) { changeColor(); });
@@ -110,6 +142,22 @@ void ModelPropWidget::blockSignals(bool b)
     ui->spinAlpha->blockSignals(b);
     ui->editTexture->blockSignals(b);
     ui->checkVisible->blockSignals(b);
+}
+
+glm::mat4 ModelPropWidget::calcModelMatrix(float * t)
+{
+    glm::mat4 model = glm::mat4(1);
+    glm::vec3 scale = glm::vec3(t[6], t[7], t[8]);
+    glm::vec3 axisX = glm::vec3(1, 0, 0);
+    glm::vec3 axisY = glm::vec3(0, 1, 0);
+    glm::vec3 axisZ = glm::vec3(0, 0, 1);
+    glm::vec3 trans = glm::vec3(t[0], t[1], t[2]);
+    model = glm::translate(model, trans);
+    model = glm::rotate(model, t[3], axisX);
+    model = glm::rotate(model, t[4], axisY);
+    model = glm::rotate(model, t[5], axisZ);
+    model = glm::scale(model, scale);
+    return model;
 }
 
 

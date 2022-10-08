@@ -22,10 +22,12 @@ public:
 
     glm::mat4 GetViewMatrix() { return _view; }
     float getZoom() { return _zoom; }
-    void translate(float dx, float dz)
+    void translate(float dx, float dy)
     {
-        _position.x += dx;
-        _position.z += dz;
+        glm::vec2 n = glm::normalize(glm::vec2(_front.x, _front.z));
+        float c = n.x, s = n.y;
+        _position.x += dx * s + dy * c;
+        _position.z += -dx * c + dy * s;
         updateCameraVectors();
     }
     void rotate(float dx, float dy)
@@ -33,9 +35,19 @@ public:
         _yaw += dx;
         _pitch += dy;
         if (_pitch > 89.0f)
+        {
+            dy -= _pitch - 89.0f;
             _pitch = 89.0f;
+        }
         if (_pitch < -89.0f)
+        {
+            dy += -89.0f - _pitch;
             _pitch = -89.0f;
+        }
+        glm::vec4 r1 = glm::rotate(glm::mat4(1.0f), -glm::radians(dx), glm::vec3(0.0f, 1.0f, 0.0f)) * 
+            glm::rotate(glm::mat4(1.0f), -glm::radians(dy), glm::vec3(_front.z, 0.0f, -_front.x)) *
+            glm::vec4(_position, 1.0f);
+        _position = glm::vec3(r1);
         updateCameraVectors();
     }
     void zoom(float d)

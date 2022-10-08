@@ -26,6 +26,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widget->ui->lightWidget, &NavDockWidget::closed, this, [&]() {
         ui->labelLights->blur();
     });
+    connect(ui->save, &QAction::triggered, this, [&](bool) {
+        QString filename = QFileDialog::getSaveFileName(this, tr("保存文件"), ".", tr("json(*.json)"));
+        auto m = ui->widget->ui->openGLWidget->getModelManager();
+        m->save_json_file(filename);
+
+    });
+    connect(ui->open, &QAction::triggered, this, [&](bool) {
+        QString filename = QFileDialog::getOpenFileName(this, tr("打开文件"), ".", tr("json(*.json)"));
+        auto m = ui->widget->ui->openGLWidget->getModelManager();
+        auto t = ui->widget->ui->openGLWidget->getTextureManager();
+        m->load_json_file(filename, t);
+
+    });
 }
 
 MainWindow::~MainWindow()

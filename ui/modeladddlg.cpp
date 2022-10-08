@@ -18,3 +18,24 @@ ModelAddDlg::~ModelAddDlg()
 {
     delete ui;
 }
+
+void ModelAddDlg::setCubeMode(QString title)
+{
+    setWindowTitle(title);
+    ui->sY->setEnabled(true);
+    ui->sZ->setEnabled(true);
+}
+
+void ModelAddDlg::setCylinderMode(QString title)
+{
+    setWindowTitle(title);
+    ui->sY->setEnabled(true);
+    ui->sZ->setEnabled(false);
+}
+
+void ModelAddDlg::setSphereMode(QString title)
+{
+    setWindowTitle(title);
+    ui->sY->setEnabled(false);
+    ui->sZ->setEnabled(false);
+}
