@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
+#include "LightManager.h"
 
 class PreviewWidget : public QOpenGLWidget
 {
@@ -48,6 +49,9 @@ public:
         if (filepath != "") index = tManager.getTextureIndex(filepath);
         return QPair<QString, int>(filepath, index);
     }
+    ModelManager * getModelManager() { return &mManager; }
+    TextureManager * getTextureManager() { return &tManager; }
+    LightManager * getLightManager() { return &lManager; }
 
 protected:
     virtual void initializeGL() override;
@@ -63,19 +67,23 @@ private:
     unsigned int VBO;
     unsigned int EBO;
     QOpenGLFunctions_3_3_Core * f;
-    Shader shader;
+    Shader modelShader;
+    Shader worldShader;
     Camera camera;
-    //QOpenGLShaderProgram program;
+    QVector<glm::mat4> boundingBoxMatrix;
     
     Qt::MouseButton mousePressButton;
     QPoint point;
     ModelManager mManager;
     TextureManager tManager;
+    LightManager lManager;
     void bindBuffer();
     void drawAxis();
     void drawZ0Plane();
     void drawModel(ModelObject & model);
     void drawBoundingBox();
+    void addLight();
+    void drawLight();
 };
 
 #endif // PREVIEWWIDGET_H

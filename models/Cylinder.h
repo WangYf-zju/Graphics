@@ -3,130 +3,163 @@
 
 namespace gm {
 
-template<typename _Scalar>
-class Cylinder : public BaseModel< Cylinder < _Scalar >>
-{
-public:
-	template<typename Scalar>
-	Cylinder(Scalar x, Scalar y, Scalar z, Scalar h, Scalar r, int sectorCount = 32)
-		:BaseModel()
-	{
-		this->_x = x > 0 ? x : 1;
-		this->_y = y > 0 ? y : 1;
-		this->_z = z > 0 ? z : 1;
-		this->_h = h > 0 ? h : 1;
-		this->_r = r > 0 ? r : 1;
-		this->_sectorCount = sectorCount > 2 ? sectorCount : 32;
-		this->V_num = sectorCount * 3 *3* 2 + sectorCount * 2 * 3*3;
-		this->_indices = new unsigned int[this->V_num];
-		this->_vertex = new Scalar[this->V_num];
-		for (int i = 0; i < V_num; i++)
-		{
-			_indices[i] = i;
-		}
-		updateVertex();
+    template<typename _Scalar, int SEG = 16>
+    class Cylinder : public BaseModel<Cylinder<_Scalar>>
+    {
+    public:
+        typedef _Scalar Scalar;
+        template<typename Scalar>
+        Cylinder(Scalar x, Scalar y, Scalar z, Scalar d, Scalar h)
+            :BaseModel()
+        {
+            this->type = MODEL_CYLINDER;
+            if (!_isInit) init();
+            translate(x, y, z);
+            this->_d = d > 0 ? d : (Scalar)1;
+            this->_h = h > 0 ? h : (Scalar)1;
+            scaleTo(_d, _d, _h);
+        }
+        constexpr size_t vertexSize() override { return _vertexSize; }
+        constexpr size_t indicesSize() override { return _indicesSize; }
+        inline Scalar* getVertex() override { return _vertex; }
+        inline unsigned int* getIndices() override { return _indices; }
 
-	}
-	inline size_t vertexSize() override { return this->V_num; }
-	inline size_t indicesSize() override { return this->V_num; }
-	inline _Scalar* getVertex() override { return _vertex; }
-	inline unsigned int* getIndices() override { return _indices; }
+    private:
+        Scalar _d;
+        Scalar _h;
+        static constexpr int _vertexSize = ((SEG * 2 + 2) * 2 + (SEG + 1) * 2) * EACH_VERTEX_SIZE;
+        static constexpr int _indicesSize = SEG * 3 * 2 + SEG * 2 * 3 + 12;
+        static Scalar _vertex[_vertexSize];
+        static unsigned int _indices[_indicesSize];
+        static bool _isInit;
 
-	~Cylinder()
-	{
-        delete[] _indices;
-		delete[] _vertex;
-	}
-private:
-	//更新顶点参数
-	void updateVertex()
-	{
-		//更新上下两个圆面的顶点信息
-		const float PI = 3.1415926f;
-		const float sectorStep = 2 * PI / _sectorCount;
-		float angle = 0.0f;
-		for (int i = 0; i < _sectorCount; i++)
-		{
-			_vertex[i] = _x + _r * cos(angle);
-			_vertex[i + 1] = _y + _r * sin(angle);
-			_vertex[i + 2] = _z - _h / 2.0;
-			angle += sectorStep;
-			_vertex[i + 3] = _x + _r * cos(angle);
-			_vertex[i + 4] = _y + _r * sin(angle);
-			_vertex[i + 5] = _z - _h / 2.0;
-			_vertex[i + 6] = _x;
-			_vertex[i + 7] = _y;
-			_vertex[i + 8] = _z - _h / 2.0;
-			
-		}
-		angle = 0.0f;
-		for (int i = _sectorCount*9; i < _sectorCount * 9+_sectorCount; i++)
-		{
-			_vertex[i] = _x + _r * cos(angle);
-			_vertex[i + 1] = _y + _r * sin(angle);
-			_vertex[i + 2] = _z + _h / 2.0;
-			angle += sectorStep;
-			_vertex[i + 3] = _x + _r * cos(angle);
-			_vertex[i + 4] = _y + _r * sin(angle);
-			_vertex[i + 5] = _z + _h / 2.0;
-			_vertex[i + 6] = _x;
-			_vertex[i + 7] = _y;
-			_vertex[i + 8] = _z + _h / 2.0;
+        static void init()
+        {
+            // Init vertex
+            const float sectorStep = 2 * PI / SEG;
+            float angle = 0.0f;
+            int count = 0;
+            for (int i = 0; i <= SEG; i++)
+            {
+                _vertex[count++] = std::cos(angle)/ (Scalar)2;
+                _vertex[count++] = (Scalar)1 / (Scalar)2;
+                _vertex[count++] = std::sin(angle)/ (Scalar)2;
+                
+                _vertex[count++] = 0;
+                _vertex[count++] = 1;
+                _vertex[count++] = 0;
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)2 / (Scalar)3;
+                angle += sectorStep;
+            }
+            for (int i = 0; i <= SEG; i++)
+            {
+                _vertex[count++] = 0;
+                _vertex[count++] = (Scalar)1 / (Scalar)2;
+                _vertex[count++] = 0;
+                
+                _vertex[count++] = 0;
+                _vertex[count++] = 1;
+                _vertex[count++] = 0;
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)3 / (Scalar)3;
+            }
+            angle = 0;
+            for (int i = 0; i <= SEG; i++)
+            {
+                _vertex[count++] = std::cos(angle)/ (Scalar)2;
+                
+                _vertex[count++] = -(Scalar)1 / (Scalar)2;
+                _vertex[count++] = std::sin(angle) / (Scalar)2;
+                _vertex[count++] = 0;
+                _vertex[count++] = -1;
+                _vertex[count++] = 0;
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)1 / (Scalar)3;
+                angle += sectorStep;
+            }
+            for (int i = 0; i <= SEG; i++)
+            {
+                _vertex[count++] = 0;
+                _vertex[count++] = -(Scalar)1 / (Scalar)2;
+                _vertex[count++] = 0;
+                
+                _vertex[count++] = 0;
+                _vertex[count++] = 1;
+                _vertex[count++] = 0;
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)0 / (Scalar)3;
+            }
+            angle = 0;
+            for (int i = 0; i <= SEG; i++)
+            {
+                _vertex[count++] = std::cos(angle)/ (Scalar)2;
+                _vertex[count++] = (Scalar)1 / (Scalar)2;
+                _vertex[count++] = std::sin(angle)/ (Scalar)2;
+                
+                _vertex[count++] = std::cos(angle);
+                _vertex[count++] = 0;
+                _vertex[count++] = std::sin(angle);
+                
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)2 / (Scalar)3;
+                
+                _vertex[count++] = std::cos(angle)/ (Scalar)2;
+                _vertex[count++] = -(Scalar)1 / (Scalar)2;
+                _vertex[count++] = std::sin(angle)/ (Scalar)2;
+                _vertex[count++] = std::cos(angle);
+                _vertex[count++] = 0;
+                _vertex[count++] = std::sin(angle);
+                
+                _vertex[count++] = (Scalar)i / (Scalar)SEG;
+                _vertex[count++] = (Scalar)1 / (Scalar)3;
+                
+                angle += sectorStep;
+            }
+            // Init indices
+            count = 0;
+            for (int i = 0; i <= SEG; i++)
+            {
+                _indices[count++] = i;
+                _indices[count++] = i + 1;
+                _indices[count++] = i + SEG + 1;
+            }
+            for (int i = 0; i <= SEG; i++)
+            {
+                _indices[count++] = i + SEG + SEG +2;
+                _indices[count++] = i + 1 + SEG + SEG + 2;
+                _indices[count++] = i  + SEG +SEG +2+ SEG+1;
+            }
+            for (int i = 0; i <= 2*SEG; i+=2)
+            {
+                _indices[count++] = i + (SEG + SEG + 2)*2;
+                _indices[count++] = i + 1 + (SEG + SEG + 2) * 2;
+                _indices[count++] = i + 2 + (SEG + SEG + 2) * 2;
 
-		}
-		angle = 0.0f;
-		//更新圆周顶点信息
-		for (int i = _sectorCount * 18; i < _sectorCount * 18 + _sectorCount; i++)
-		{
-			//矩形分成两个三角形，每个三角形三个顶点，每个顶点x,y,z三个信息，所以一个矩形增加2*3*3个数据
-			_vertex[i] = _x + _r * cos(angle);
-			_vertex[i + 1] = _y + _r * sin(angle);
-			_vertex[i + 2] = _z - _h / 2.0;
-			
-			_vertex[i + 3] = _x + _r * cos(angle);
-			_vertex[i + 4] = _y + _r * sin(angle);
-			_vertex[i + 5] = _z + _h / 2.0;
-			angle += sectorStep;
-			_vertex[i + 6] = _x + _r * cos(angle);
-			_vertex[i + 7] = _y + _r * sin(angle);
-			_vertex[i + 8] = _z - _h / 2.0;
+                _indices[count++] = i + 1 + (SEG + SEG + 2) * 2;
+                _indices[count++] = i + 2 + (SEG + SEG + 2) * 2;
+                _indices[count++] = i + 3 + (SEG + SEG + 2) * 2;
+            }
+        }
+    };
+
+    template<typename _Scalar, int SEG>
+    _Scalar Cylinder<_Scalar, SEG>::_vertex[] = { 0 };
+
+    template<typename _Scalar, int SEG>
+    unsigned int Cylinder<_Scalar, SEG>::_indices[] = { 0 };
+
+    template<typename _Scalar, int SEG>
+    bool Cylinder<_Scalar, SEG>::_isInit = false;
+
+    template<typename _Scalar, int SEG>
+    struct traits<Cylinder<_Scalar, SEG>>
+    {
+    public:
+        typedef _Scalar Scalar;
+    };
+
+}
 
 
-			_vertex[i + 9] = _x + _r * cos(angle);
-			_vertex[i + 10] = _y + _r * sin(angle);
-			_vertex[i + 11] = _z - _h / 2.0;
-
-			_vertex[i + 12] = _x + _r * cos(angle);
-			_vertex[i + 13] = _y + _r * sin(angle);
-			_vertex[i + 14] = _z + _h / 2.0;
-			angle -= sectorStep;
-			_vertex[i + 15] = _x + _r * cos(angle);
-			_vertex[i + 16] = _y + _r * sin(angle);
-			_vertex[i + 17] = _z + _h / 2.0;
-			angle += sectorStep;
-
-		}
-	}
-
-	int V_num;
-	_Scalar _h, _r;
-	int _sectorCount;
-	_Scalar* _vertex;
-	unsigned int* _indices;
-
-};
-
-
-template<typename _Scalar>
-struct traits<Cylinder<_Scalar>>
-{
-public:
-	typedef _Scalar Scalar;
-};
-template<>
-
-
-} // namespace gm
-
-
-#endif //!__CYLINDER_H
+#endif

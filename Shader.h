@@ -54,14 +54,14 @@ public:
         this->f = f;
         return this;
     }
-    // constructor generates the shader on the fly
+    // constructor generates the modelShader on the fly
     Shader * compile ()
     {
         const char* vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();
         // compile shaders
         unsigned int vertex, fragment;
-        // vertex shader
+        // vertex modelShader
         vertex = f->glCreateShader(GL_VERTEX_SHADER);
         f->glShaderSource(vertex, 1, &vShaderCode, NULL);
         f->glCompileShader(vertex);
@@ -71,7 +71,7 @@ public:
         f->glShaderSource(fragment, 1, &fShaderCode, NULL);
         f->glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
-        // shader Program
+        // modelShader Program
         ID = f->glCreateProgram();
         f->glAttachShader(ID, vertex);
         f->glAttachShader(ID, fragment);
@@ -82,7 +82,7 @@ public:
         f->glDeleteShader(fragment);
         return this;
     }
-    // activate the shader
+    // activate the modelShader
     Shader * use()
     {
         f->glUseProgram(ID);
@@ -151,7 +151,7 @@ public:
     }
 
 private:
-    // utility function for checking shader compilation/linking errors.
+    // utility function for checking modelShader compilation/linking errors.
     void checkCompileErrors(unsigned int shader, std::string type) const
     {
         int success;

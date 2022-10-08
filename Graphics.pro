@@ -32,6 +32,7 @@ HEADERS += \
     controls.h \
     ModelManager.h \
     TextureManager.h \
+    LightManager.h \
     Camera.h \
     Shader.h \
 
@@ -39,7 +40,8 @@ FORMS += \
     ui/modeladddlg.ui \
     ui/content.ui \
     ui/mainwindow.ui \
-    ui/propertieswidget.ui \
+    ui/modelpropwidget.ui \
+    ui/lightpropwidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

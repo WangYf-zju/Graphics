@@ -11,7 +11,7 @@
 #include "ForwardDeclarations.h"
 #include "BaseModel.h"
 #include "Cube.h"
-//#include "Cylinder.h"
+#include "Cylinder.h"
 #include "Sphere.h"
 
 #endif

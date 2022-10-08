@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -191,7 +191,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="toolLight">
+      <widget class="SwitchToolButton" name="toolLight">
        <property name="minimumSize">
         <size>
          <width>50</width>
@@ -217,6 +217,24 @@
          <height>24</height>
         </size>
        </property>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>38</x>
+          <y>34</y>
+          <width>12</width>
+          <height>12</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>▶</string>
+        </property>
+       </widget>
       </widget>
      </item>
      <item>
@@ -238,7 +256,7 @@
     <widget class="PreviewWidget" name="openGLWidget"/>
    </item>
    <item>
-    <widget class="ModelDockWidget" name="dockWidget">
+    <widget class="NavDockWidget" name="modelWidget">
      <property name="minimumSize">
       <size>
        <width>300</width>
@@ -256,6 +274,9 @@
        <pointsize>9</pointsize>
       </font>
      </property>
+     <property name="windowTitle">
+      <string>模型列表</string>
+     </property>
      <widget class="QWidget" name="dockWidgetContents">
       <property name="minimumSize">
        <size>
@@ -271,7 +292,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_1">
        <item>
-        <widget class="QTableView" name="list">
+        <widget class="ColumnList" name="modelList">
          <property name="selectionMode">
           <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
@@ -281,7 +302,7 @@
         </widget>
        </item>
        <item>
-        <widget class="PropertiesWidget" name="properties" native="true">
+        <widget class="ModelPropWidget" name="modelProp" native="true">
          <property name="minimumSize">
           <size>
            <width>282</width>
@@ -295,6 +316,56 @@
           </size>
          </property>
         </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="NavDockWidget" name="lightWidget">
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>136</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>300</width>
+       <height>524287</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="windowTitle">
+      <string>光源列表</string>
+     </property>
+     <widget class="QWidget" name="dockWidgetContents_2">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>300</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_1">
+       <item>
+        <widget class="ColumnList" name="lightList">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="LightPropWidget" name="lightProp" native="true"/>
        </item>
       </layout>
      </widget>
@@ -314,16 +385,27 @@
    <header>controls.h</header>
   </customwidget>
   <customwidget>
-   <class>ModelDockWidget</class>
+   <class>NavDockWidget</class>
    <extends>QDockWidget</extends>
    <header>controls.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PropertiesWidget</class>
+   <class>ModelPropWidget</class>
    <extends>QWidget</extends>
    <header>propertieswidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LightPropWidget</class>
+   <extends>QWidget</extends>
+   <header>propertieswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColumnList</class>
+   <extends>QTableView</extends>
+   <header>controls.h</header>
   </customwidget>
  </customwidgets>
  <resources>

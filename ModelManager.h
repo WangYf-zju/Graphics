@@ -4,9 +4,17 @@
 #include "models/GraphicModel"
 #include <vector>
 #include <string>
+#include <sstream>
 
-#define INIT_VERTEX_SIZE 4096
-#define INIT_ELEMENT_SIZE 4096
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QTextStream>
+
+#include "TextureManager.h"
+
+#define INIT_VERTEX_SIZE 4096*10
+#define INIT_ELEMENT_SIZE 4096*10
 #define INIT_MODEL_MAXCOUNT 64
 #define X_AXIS_VERTEX_START 0
 #define X_AXIS_VERTEX_COUNT 2
@@ -40,6 +48,8 @@ struct ModelObject {
     glm::vec4 color;
     std::string texture;
     int textureIndex;
+    float modelTrans[9];
+    float specular;
 };
 
 class ModelManager {
@@ -112,6 +122,18 @@ public:
                 glm::vec4(1.0f, 0.5f, 0.2f, 1.0f),
                 "",
                 -1,
+                {
+                    model->getXF(), 
+                    model->getYF(), 
+                    model->getZF(), 
+                    model->getThetaF(), 
+                    model->getPhiF(), 
+                    model->getPsiF(), 
+                    model->getSxF(), 
+                    model->getSyF(), 
+                    model->getSzF() 
+                },
+                0.1,
             };
             _models.push_back(m);
             modelNameIndex++;
@@ -187,6 +209,112 @@ public:
             }
         }
     }
+
+    void save_json_file(QString filename)
+    {
+        //保存顶点坐标信息
+        QJsonObject  modelObj;
+        QJsonArray name;
+        for (int i = 0; i < _models.size(); i++)
+        {
+            QJsonObject model;
+            QJsonArray a;
+            ModelObject m = _models[i];
+            //坐标旋转等信息
+            for (int j = 0; j < 9; j++)
+            {
+                a.append(m.modelTrans[j]);
+            }
+            model.insert("inf", a);
+            model.insert("type", m.type);
+            model.insert("texture", QString::fromStdString(m.texture));
+            model.insert("specular", m.specular);
+            modelObj.insert(QString::fromStdString(m.name), model);
+            name.append(QString::fromStdString(m.name));
+        }
+        modelObj.insert("name", name);
+        QJsonDocument doc;
+        doc.setObject(modelObj);
+
+        QFile file(filename);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+            return;
+
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");		// 设置写入编码是UTF8
+        // 写入文件
+        stream << doc.toJson();
+        file.close();
+
+    }
+
+    void load_json_file(QString filename, TextureManager *t)
+    {
+        initModelManager();
+        QFile file(filename);
+        if (!file.open(QFile::ReadOnly | QFile::Text))
+            return;
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");		// 设置读取编码是UTF8
+        QString str = stream.readAll();
+
+        file.close();
+        QJsonParseError jsonError;
+        QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8(), &jsonError);
+        // 判断是否解析失败
+        if (jsonError.error != QJsonParseError::NoError && !doc.isNull())
+            return;
+        QJsonObject modelObj = doc.object();
+        QJsonValue nameValue = modelObj.value("name");
+        if (nameValue.type() == QJsonValue::Array)
+        {
+            QJsonArray nameArray = nameValue.toArray();
+            for (int i = 0; i < nameArray.size(); i++)
+            {
+                QJsonValue name = nameArray.at(i);
+                QJsonValue modelValue = modelObj.value(name.toString());
+                QJsonObject model = modelValue.toObject();
+                QJsonValue arrayvalue = model.value("inf");
+                QJsonValue type = model.value("type");
+                QJsonValue texture = model.value("texture");
+                QJsonValue specular = model.value("specular");
+                t->addTexture(texture.toString());
+                QJsonArray a = arrayvalue.toArray();
+                float inf[9];
+                for (int j = 0; j < a.size(); j++)
+                {
+                    QJsonValue vf = a.at(i);
+                    inf[j] = vf.toDouble();
+                }
+                if (type.toInt() == 0)
+                {
+                    this->addModel(new gm::Cube<float>(inf[0], inf[1], inf[2], inf[6], inf[7], inf[8]));
+                }
+                else if (type.toInt() == 2)
+                {
+                    this->addModel(new gm::Sphere<float>(inf[0], inf[1], inf[2], inf[8]));
+                }
+                else if(type.toInt() == 1)
+                {
+                    this->addModel(new gm::Cylinder<float, 16>(inf[0], inf[1], inf[2], inf[6], inf[7]));
+                }
+            }
+        }
+
+    }
+
+
+
+    void initModelManager()
+    {
+        _models.clear();
+        _vertexBuffer.clear();
+        _indicesBuffer.clear();
+        addAxisVertex();
+        addBoundingBoxVertex();
+        addZ0PlaneVertex();
+    }
+
 private:
     std::vector<ModelObject> _models;
     std::vector<float> _vertexBuffer;

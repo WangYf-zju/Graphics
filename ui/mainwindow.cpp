@@ -16,8 +16,15 @@ MainWindow::MainWindow(QWidget *parent)
         ui->labelModels->focus();
         ui->widget->openModelList();
     });
-    connect(ui->widget->ui->dockWidget, &ModelDockWidget::closed, this, [&]() {
+    connect(ui->labelLights, &NavLabel::clicked, ui->widget, [&]() {
+        ui->labelLights->focus();
+        ui->widget->openLightList();
+    });
+    connect(ui->widget->ui->modelWidget, &NavDockWidget::closed, this, [&]() {
         ui->labelModels->blur();
+    });
+    connect(ui->widget->ui->lightWidget, &NavDockWidget::closed, this, [&]() {
+        ui->labelLights->blur();
     });
 }
 

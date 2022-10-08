@@ -22,7 +22,9 @@ class NavLabel : public QLabel
 {
     Q_OBJECT
 public:
-    NavLabel(QWidget * parent = nullptr) : QLabel(parent) {}
+    NavLabel(QWidget * parent = nullptr) 
+        : QLabel(parent)
+        , isFocus(false) {}
 signals:
     void clicked();
 public:
@@ -81,11 +83,14 @@ private:
 #include <QDockWidget>
 #include <QCloseEvent>
 
-class ModelDockWidget : public QDockWidget
+class NavDockWidget : public QDockWidget
 {
     Q_OBJECT
 public:
-    ModelDockWidget(QWidget * parent = nullptr) : QDockWidget(parent) {}
+    NavDockWidget(QWidget * parent = nullptr) : QDockWidget(parent) 
+    {
+        this->setFeatures(QDockWidget::DockWidgetClosable);
+    }
 signals:
     void closed();
 protected:
@@ -93,6 +98,30 @@ protected:
     {
         emit closed();
         QDockWidget::closeEvent(event);
+    }
+    virtual void hideEvent(QHideEvent *event) override
+    {
+        emit closed();
+        QDockWidget::hideEvent(event);
+    }
+};
+
+#include <QTableView>
+#include <QKeyEvent>
+
+class ColumnList : public QTableView
+{
+    Q_OBJECT
+public:
+    ColumnList(QWidget * parent = nullptr) : QTableView(parent) {}
+signals:
+    void deleteKeyPressed();
+protected:
+    virtual void keyPressEvent(QKeyEvent * event) override
+    {
+        if (event->key() == Qt::Key_Delete)
+            emit deleteKeyPressed();
+        QTableView::keyPressEvent(event);
     }
 };
 

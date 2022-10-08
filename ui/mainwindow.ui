@@ -81,6 +81,44 @@ border-right: 5px solid #ccc</string>
        </widget>
       </item>
       <item>
+       <widget class="NavLabel" name="labelLights">
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>72</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>72</height>
+         </size>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+               margin: 5px 0px 5px;
+               border: none;
+               border-right: 5px solid #ccc
+             </string>
+        </property>
+        <property name="text">
+         <string>光
+源
+列
+表</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>

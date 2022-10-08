@@ -6,18 +6,20 @@
 #include <QFileDialog>
 
 #include "ModelManager.h"
+#include "LightManager.h"
 
 namespace Ui {
-class PropertiesWidget;
+class ModelPropWidget;
+class LightPropWidget;
 }
 
-class PropertiesWidget : public QWidget
+class ModelPropWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit PropertiesWidget(QWidget *parent = nullptr);
-    ~PropertiesWidget();
+    explicit ModelPropWidget(QWidget *parent = nullptr);
+    ~ModelPropWidget();
     void setModel(ModelObject *);
     void updateTexture(int index, QString filepath);
 
@@ -27,11 +29,30 @@ signals:
     void textureChanged(unsigned int, QString);
 
 private:
-    Ui::PropertiesWidget *ui;
+    Ui::ModelPropWidget *ui;
     ModelObject modelTemp;
     void colorPreview(int r, int g, int b);
     void changeColor();
     void blockSignals(bool b);
+};
+
+class LightPropWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    LightPropWidget(QWidget *parent = nullptr);
+    void setLight(LightObject *);
+signals:
+    void lightChanged(LightObject &);
+
+private:
+    Ui::LightPropWidget *ui;
+    LightObject lightTemp;
+    void blockSignals(bool b);
+    void setDirectionalLightMode();
+    void setPointLightMode();
+    void setSpotLightMode();
 };
 
 #endif // PROPERTIESWIDGET_H

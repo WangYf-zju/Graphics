@@ -10,10 +10,12 @@
 #include <QListView>
 #include <QMap>
 #include <QStandardItemModel>
+#include <QMessageBox>
 
 #include "controls.h"
 #include "modeladddlg.h"
 #include "models/GraphicModel"
+#include "LightManager.h"
 
 namespace Ui {
 class Content;
@@ -28,20 +30,24 @@ public:
     explicit Content(QWidget *parent = nullptr);
     ~Content();
     void openModelList();
-    void openModelInfo(bool hideList = true);
+    void openLightList();
 
 private:
     Ui::Content *ui;
     ModelAddDlg modelAddDlg;
-    QMenu modelMenu;
+    QMenu modelMenu, lightMenu;
     QMap<QAction *, gm::MODEL_TYPE> modelMenuAction;
-    QAction * curModelAction;
-    QStandardItemModel * listModel;
+    QMap<QAction *, LIGHT_TYPE> lightMenuAction;
+    QAction * curModelAction, * curLightAction;
+    QStandardItemModel * modelListModel, * lightListModel;
     void initControls();
-    void AddModel();
-    void ShowAddModelDlg(gm::MODEL_TYPE modelType);
-
+    void addModel();
+    void addLight();
+    void showAddModelDlg(gm::MODEL_TYPE modelType);
+    void showModelInfo(bool hideList = false);
+    void showLightInfo(bool hideList = false);
     void updateModelList();
+    void updateLightList();
 };
 
 #endif // CONTENT_H

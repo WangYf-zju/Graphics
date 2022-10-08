@@ -66,25 +66,6 @@ public:
         _theta += glm::radians(theta);
         _psi += glm::radians(psi);
         _phi += glm::radians(phi);
-        
-        /*if (theta != 0)
-        {
-            theta = glm::radians(theta);
-            _theta += theta;
-            _model = glm::rotate(_model, theta, glm::vec3((Scalar)1.0, (Scalar)0.0, (Scalar)0.0));
-        }
-        if (psi != 0)
-        {
-            psi = glm::radians(psi);
-            _psi += psi;
-            _model = glm::rotate(_model, psi, glm::vec3((Scalar)0.0, (Scalar)1.0, (Scalar)0.0));
-        }
-        if (phi != 0)
-        {
-            phi = glm::radians(phi);
-            _phi += phi;
-            _model = glm::rotate(_model, phi, glm::vec3((Scalar)0.0, (Scalar)0.0, (Scalar)1.0));
-        }*/
         updateModelMatrix();
         return static_cast<_Derived *>(this);
     }
@@ -108,6 +89,15 @@ public:
     {
         return glm::mat4(_model); 
     }
+    inline float getXF() { return (float)_x; }
+    inline float getYF() { return (float)_y; }
+    inline float getZF() { return (float)_z; }
+    inline float getThetaF() { return (float)_theta; }
+    inline float getPhiF() { return (float)_phi; }
+    inline float getPsiF() { return (float)_psi; }
+    inline float getSxF() { return (float)_sx; }
+    inline float getSyF() { return (float)_sy; }
+    inline float getSzF() { return (float)_sz; }
 
 protected:
     Scalar _x;

@@ -8,6 +8,5 @@
         <file>icons/cube.ico</file>
         <file>icons/cylinder.ico</file>
         <file>icons/sphere.ico</file>
-        <file>icons/lock.ico</file>
     </qresource>
 </RCC>

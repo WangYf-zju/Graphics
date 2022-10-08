@@ -17,13 +17,15 @@ public:
         _worldup = glm::vec3(0.0f, 1.0f, 0.0f);
         updateCameraVectors();
     }
+    glm::vec3 getPosition() { return _position; }
+    glm::vec3 getFront() { return _front; }
 
     glm::mat4 GetViewMatrix() { return _view; }
     float getZoom() { return _zoom; }
-    void translate(float dx, float dy)
+    void translate(float dx, float dz)
     {
         _position.x += dx;
-        _position.y += dy;
+        _position.z += dz;
         updateCameraVectors();
     }
     void rotate(float dx, float dy)
