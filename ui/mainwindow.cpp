@@ -29,21 +29,27 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->save, &QAction::triggered, this, [&](bool) {
         QString filename = QFileDialog::getSaveFileName(this, 
             QString::fromLocal8Bit("保存文件"), ".", tr("json(*.json)"));
-        auto m = ui->widget->ui->openGLWidget->getModelManager();
-        auto t = ui->widget->ui->openGLWidget->getTextureManager();
-        m->save_json_file(filename, t);
+        if (filename != "")
+        {
+            auto m = ui->widget->ui->openGLWidget->getModelManager();
+            auto t = ui->widget->ui->openGLWidget->getTextureManager();
+            m->save_json_file(filename, t);
+        }
     });
     connect(ui->open, &QAction::triggered, this, [&](bool) {
         QString filename = QFileDialog::getOpenFileName(this, 
             QString::fromLocal8Bit("打开文件"), ".", tr("json(*.json)"));
-        auto m = ui->widget->ui->openGLWidget->getModelManager();
-        auto t = ui->widget->ui->openGLWidget->getTextureManager();
-        t->setCurrentDir(QFileInfo(filename).absoluteDir());
-        m->load_json_file(filename, t);
-        ui->widget->updateModelList();
-        ui->widget->updateLightList();
-        ui->widget->ui->openGLWidget->rebindBuffer();
-        ui->widget->ui->openGLWidget->update();
+        if (filename != "")
+        {
+            auto m = ui->widget->ui->openGLWidget->getModelManager();
+            auto t = ui->widget->ui->openGLWidget->getTextureManager();
+            t->setCurrentDir(QFileInfo(filename).absoluteDir());
+            m->load_json_file(filename, t, ui->widget->ui->openGLWidget);
+            ui->widget->updateModelList();
+            ui->widget->updateLightList();
+            ui->widget->ui->openGLWidget->rebindBuffer();
+            ui->widget->ui->openGLWidget->update();
+        }
     });
     connect(ui->frontView, &QAction::triggered, this, [&](bool) {
         ui->widget->ui->openGLWidget->getCamera()->frontView();

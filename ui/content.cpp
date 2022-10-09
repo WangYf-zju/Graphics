@@ -125,7 +125,7 @@ Content::Content(QWidget *parent)
             QMessageBox::Yes, QMessageBox::No)
             == QMessageBox::Yes)
         {
-            for (auto it = selections.rbegin(); it != selections.rend() - 1; it++)
+            for (auto it = selections.rbegin(); it != selections.rend(); it++)
                 manager->removeLight(it->row());
             ui->openGLWidget->update();
             updateLightList();
@@ -252,6 +252,7 @@ void Content::initControls()
     lightListModel->setItem(0, 0, new QStandardItem(QString::number(1)));
     lightListModel->setItem(0, 1, new QStandardItem(LIGHT_DIRECTIONAL_TEXT));
     ui->lightList->setRowHeight(0, LIST_ROW_HEIGHT);
+    updateLightList();
 }
 
 void Content::addModel()
@@ -356,7 +357,7 @@ void Content::updateLightList()
     LightManager * manager = ui->openGLWidget->getLightManager();
     auto pointLights = manager->getPointLights();
     auto spotLights = manager->getSpotLights();
-    lightListModel->removeRows(1, lightListModel->rowCount());
+    lightListModel->removeRows(1, lightListModel->rowCount() - 1);
     int i = 1;
     for (auto it = pointLights->begin(); it != pointLights->end(); it++, i++)
     {

@@ -19,26 +19,37 @@ public:
             return originalPath[index]; 
         return "";
     }
-    QString addTexture(QString filepath)
+    QString addTexture(QString filepath, bool forceUpdate = false)
     {
         QImage img;
         bool flag = QFileInfo(filepath).isAbsolute();
         QString path = filepath;
         if (!flag) path = _curDir.absoluteFilePath(filepath);
+        if (!forceUpdate)
+        {
+            QFileInfo f1(path);
+            for (auto k = texturePath.keyBegin(); k != texturePath.keyEnd(); k++)
+            {
+                QFileInfo f2(*k);
+                if (f1 == f2) return *k;
+            }
+        }
         if (img.load(path))
         {
             QOpenGLTexture * texture = new QOpenGLTexture(img);
             QFileInfo f1(path);
-            
             for (auto k = texturePath.keyBegin(); k != texturePath.keyEnd(); k++)
             {
                 QFileInfo f2(*k);
                 if (f1 == f2)
                 {
-                    unsigned int index = texturePath[*k];
-                    auto p = textures[index];
-                    textures[index] = texture;
-                    delete p;
+                    if (forceUpdate)
+                    {
+                        unsigned int index = texturePath[*k];
+                        auto p = textures[index];
+                        textures[index] = texture;
+                        delete p;
+                    }
                     return *k;
                 }
             }

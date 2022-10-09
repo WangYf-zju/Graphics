@@ -15,7 +15,7 @@
 
 #define INIT_VERTEX_SIZE 4096
 #define INIT_ELEMENT_SIZE 4096
-#define INIT_MODEL_MAXCOUNT 64
+#define INIT_MODEL_MAXCOUNT 1000
 #define X_AXIS_VERTEX_START 0
 #define X_AXIS_VERTEX_COUNT 2
 #define Y_AXIS_VERTEX_START 2
@@ -56,7 +56,7 @@ struct ModelObject {
     float specular;
 };
 
-class ModelManager {
+class ModelManager: public QObject {
 public:
     ModelManager() 
     {
@@ -154,7 +154,7 @@ public:
                     model->getSyF(), 
                     model->getSzF() 
                 },
-                0.1,
+                0.4,
             };
             _models.push_back(m);
             modelNameIndex++;
@@ -280,7 +280,7 @@ public:
 
     }
 
-    void load_json_file(QString filename, TextureManager *t)
+    void load_json_file(QString filename, TextureManager *t, QWidget * parent = nullptr)
     {
         initModelManager();
         QFile file(filename);

@@ -17,7 +17,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>图形学</string>
+   <string>计算机图形学作业</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/icons/cube.ico</normaloff>:/icons/icons/cube.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
@@ -275,6 +279,8 @@ border-right: 5px solid #ccc</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

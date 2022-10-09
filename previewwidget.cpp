@@ -11,9 +11,12 @@ PreviewWidget::PreviewWidget(QWidget *parent, Qt::WindowFlags flag)
 {
     this->setWindowFlag(Qt::WindowStaysOnBottomHint, true);
     this->mousePressButton = Qt::NoButton;
+    _showAxis = true;
+    _showPlane = true;
     //mManager.addModel(new gm::Sphere<float>(0.0f, 0.0f, 0.0f, 1.0f));
-    //mManager.addModel(new gm::Cube<float>(2.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));
+    mManager.addModel(new gm::Cube<float>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));
     //mManager.addModel(new gm::Cylinder<float>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f));
+    lManager.addLight(POINT_LIGHT);
 }
 
 PreviewWidget::~PreviewWidget()
