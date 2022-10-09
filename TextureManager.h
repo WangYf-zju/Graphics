@@ -7,17 +7,28 @@
 #include <QOpenGLTexture>
 #include <QMap>
 #include <QVector>
+#include <QDir>
 
 class TextureManager
 {
 public:
+    void setCurrentDir(QDir &&dir) { this->_curDir = dir; }
+    QString getOriginPath(int index) 
+    {
+        if (index >= 0 && index < originalPath.size())
+            return originalPath[index]; 
+        return "";
+    }
     QString addTexture(QString filepath)
     {
         QImage img;
-        if (img.load(filepath))
+        bool flag = QFileInfo(filepath).isAbsolute();
+        QString path = filepath;
+        if (!flag) path = _curDir.absoluteFilePath(filepath);
+        if (img.load(path))
         {
             QOpenGLTexture * texture = new QOpenGLTexture(img);
-            QFileInfo f1(filepath);
+            QFileInfo f1(path);
             
             for (auto k = texturePath.keyBegin(); k != texturePath.keyEnd(); k++)
             {
@@ -31,10 +42,11 @@ public:
                     return *k;
                 }
             }
-            filepath = f1.absoluteFilePath();
-            texturePath.insert(filepath, textures.size());
+            path = f1.absoluteFilePath();
+            texturePath.insert(path, textures.size());
             textures.push_back(texture);
-            return filepath;
+            originalPath.push_back(filepath);
+            return path;
         }
         else return "";
     }
@@ -62,6 +74,8 @@ public:
 private:
     QMap<QString, unsigned int> texturePath;
     QVector<QOpenGLTexture*> textures;
+    QVector<QString> originalPath;
+    QDir _curDir;
 };
 
 #endif // !TEXTUREMANAGER_H

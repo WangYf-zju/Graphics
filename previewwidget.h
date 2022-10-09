@@ -27,12 +27,16 @@ public:
     void addModel(gm::BaseModel<Derived> & model)
     {
         mManager.addModel(&model);
-        bindBuffer();
+        rebindBuffer();
         update();
     }
     ModelManager * getModelManager() { return &mManager; }
     TextureManager * getTextureManager() { return &tManager; }
     LightManager * getLightManager() { return &lManager; }
+    Camera * getCamera() { return &camera; }
+    void rebindBuffer();
+    void showAxis(bool b) { this->_showAxis = b; }
+    void showPlane(bool b) { this->_showPlane = b; }
 
 protected:
     virtual void initializeGL() override;
@@ -47,6 +51,7 @@ private:
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
+    bool _showAxis, _showPlane;
     QOpenGLFunctions_3_3_Core * f;
     Shader modelShader;
     Shader worldShader;
@@ -58,7 +63,6 @@ private:
     ModelManager mManager;
     TextureManager tManager;
     LightManager lManager;
-    void bindBuffer();
     void drawAxis();
     void drawZ0Plane();
     void drawModel(ModelObject & model);

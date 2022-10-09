@@ -55,7 +55,42 @@ public:
         _position += _front * d;
         updateCameraVectors();
     }
-
+    void frontView()
+    {
+        _position = glm::vec3(0.0f, 0.0f, 10.0f);
+        _yaw = -90; _pitch = 0;
+        updateCameraVectors();
+    }
+    void backView()
+    {
+        _position = glm::vec3(0.0f, 0.0f, -10.0f);
+        _yaw = 90; _pitch = 0;
+        updateCameraVectors();
+    }
+    void leftView()
+    {
+        _position = glm::vec3(-10.0f, 0.0f, 0.0f);
+        _yaw = 0; _pitch = 0;
+        updateCameraVectors();
+    }
+    void rightView()
+    {
+        _position = glm::vec3(10.0f, 0.0f, 0.0f);
+        _yaw = 180; _pitch = 0;
+        updateCameraVectors();
+    }
+    void topView()
+    {
+        _position = glm::vec3(0.0f, 10.0f, 0.0f);
+        _yaw = -90; _pitch = -89;
+        updateCameraVectors();
+    }
+    void bottomView()
+    {
+        _position = glm::vec3(0.0f, -10.0f, 0.0f);
+        _yaw = -90; _pitch = 89;
+        updateCameraVectors();
+    }
 private:
     glm::vec3 _position, _front, _up, _right;
     glm::vec3 _worldup;

@@ -13,8 +13,8 @@
 
 #include "TextureManager.h"
 
-#define INIT_VERTEX_SIZE 4096*10
-#define INIT_ELEMENT_SIZE 4096*10
+#define INIT_VERTEX_SIZE 4096
+#define INIT_ELEMENT_SIZE 4096
 #define INIT_MODEL_MAXCOUNT 64
 #define X_AXIS_VERTEX_START 0
 #define X_AXIS_VERTEX_COUNT 2
@@ -22,11 +22,15 @@
 #define Y_AXIS_VERTEX_COUNT 2
 #define Z_AXIS_VERTEX_START 4
 #define Z_AXIS_VERTEX_COUNT 2
-#define BOUNDING_BOX_VERTEX_START (6 * sizeof(float))
+#define BOUNDING_BOX_VERTEX_START (6)
 #define BOUNDING_BOX_VERTEX_COUNT 24
-#define Z0_PLANE_VERTEX_START (30 * sizeof(float))
+#define LIGHT_VERTEX_START 30
+#define LIGHT_VERTEX_COUNT 16
+#define CUBE_VERTEX_START 46
+#define CUBE_VERTEX_COUNT 36
+#define Z0_PLANE_VERTEX_START 82
 #define Z0_PLANE_SIZE 5
-#define Z0_PLANE_VERTEX_COUNT (Z0_PLANE_SIZE * 8 + 4)
+#define Z0_PLANE_VERTEX_COUNT (Z0_PLANE_SIZE * 8 + 4) 
 
 enum DRAW_METHOD {
     DIRECT_DRAW,
@@ -59,9 +63,7 @@ public:
         _vertexBuffer.reserve(INIT_VERTEX_SIZE);
         _indicesBuffer.reserve(INIT_ELEMENT_SIZE);
         _models.reserve(INIT_MODEL_MAXCOUNT);
-        addAxisVertex();
-        addBoundingBoxVertex();
-        addZ0PlaneVertex();
+        initModelManager();
     };
     inline size_t size()
     {
@@ -92,15 +94,34 @@ public:
     {
         if (model != nullptr)
         {
-            const size_t vertexOldSize = _vertexBuffer.size();
-            const size_t vertexSize = vertexOldSize + model->vertexSize();
-            const size_t indicesOldSize = _indicesBuffer.size();
-            const size_t indicesSize = indicesOldSize + model->indicesSize();
-            float * vertex = _vertexBuffer.data() + _vertexBuffer.size();
-            unsigned int * indices = _indicesBuffer.data() + _indicesBuffer.size();
-            _vertexBuffer.resize(vertexSize);
-            _indicesBuffer.resize(indicesSize);
-            model->render(vertex, indices, vertexOldSize);
+            int mVertexStartIndex;
+            int mIndicesStartIndex;
+            int mVertexSize;
+            int mIndicesSize;
+            if (model->type == gm::MODEL_CUBE)
+            {
+                mVertexStartIndex = CUBE_VERTEX_START*EACH_VERTEX_SIZE;
+                mIndicesStartIndex = 0;
+                mVertexSize = model->vertexSize();
+                mIndicesSize = model->indicesSize();
+            }
+            else
+            {
+                const size_t vertexOldSize = _vertexBuffer.size();
+                const size_t vertexSize = vertexOldSize + model->vertexSize();
+                const size_t indicesOldSize = _indicesBuffer.size();
+                const size_t indicesSize = indicesOldSize + model->indicesSize();
+                _vertexBuffer.resize(vertexSize);
+                _indicesBuffer.resize(indicesSize);
+                float * vertex = _vertexBuffer.data() + vertexOldSize;
+                unsigned int * indices = _indicesBuffer.data() + indicesOldSize;
+
+                model->render(vertex, indices, vertexOldSize);
+                mVertexStartIndex = vertexOldSize;
+                mIndicesStartIndex = indicesOldSize;
+                mVertexSize = model->vertexSize();
+                mIndicesSize = model->indicesSize();
+            }
 
             std::stringstream name;
             name << "Model" << modelNameIndex;
@@ -110,10 +131,10 @@ public:
             ModelObject m = {
                 method,
                 model->getModelMatrix(),
-                vertexOldSize,
-                indicesOldSize,
-                model->vertexSize(),
-                model->indicesSize(),
+                mVertexStartIndex,
+                mIndicesStartIndex,
+                mVertexSize,
+                mIndicesSize,
                 modelNameIndex,
                 name.str(),
                 model->type,
@@ -219,7 +240,7 @@ public:
         }
     }
 
-    void save_json_file(QString filename)
+    void save_json_file(QString filename, TextureManager *t)
     {
         //保存顶点坐标信息
         QJsonObject  modelObj;
@@ -234,10 +255,11 @@ public:
             {
                 a.append(m.modelTrans[j]);
             }
+            QString originPath = t->getOriginPath(m.textureIndex);
             model.insert("inf", a);
             model.insert("visible", m.visible);
             model.insert("type", m.type);
-            model.insert("texture", QString::fromStdString(m.texture));
+            model.insert("texture", originPath);
             model.insert("specular", m.specular);
             modelObj.insert(QString::fromStdString(m.name), model);
             name.append(QString::fromStdString(m.name));
@@ -308,8 +330,6 @@ public:
                     m->textureIndex = textureIndex;
                     m->name = name.toString().toStdString();
                     m->visible = visible.toBool();
-
-
                 }
                 else if (type.toInt() == 2)
                 {
@@ -323,7 +343,7 @@ public:
                 }
                 else if (type.toInt() == 1)
                 {
-                    this->addModel(new gm::Cylinder<float, 16>(inf[0], inf[1], inf[2], inf[6], inf[7]));
+                    this->addModel(new gm::Cylinder<float>(inf[0], inf[1], inf[2], inf[6], inf[7]));
                     auto m = _models.rbegin();
                     m->specular = specular.toDouble();
                     m->texture = texturePath.toStdString();
@@ -333,10 +353,7 @@ public:
                 }
             }
         }
-
     }
-
-
 
     void initModelManager()
     {
@@ -345,6 +362,8 @@ public:
         _indicesBuffer.clear();
         addAxisVertex();
         addBoundingBoxVertex();
+        addLightVertex();
+        addCubeVertex();
         addZ0PlaneVertex();
     }
 
@@ -364,7 +383,7 @@ private:
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 0.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         };
-        _vertexBuffer.insert(_vertexBuffer.end(), axisVertex, axisVertex + sizeof(axisVertex));
+        _vertexBuffer.insert(_vertexBuffer.end(), axisVertex, axisVertex + sizeof(axisVertex) / sizeof(float));
     }
 
     void addZ0PlaneVertex()
@@ -425,7 +444,78 @@ private:
              0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
              0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         };
-        _vertexBuffer.insert(_vertexBuffer.end(), boxVertex, boxVertex + sizeof(boxVertex));
+        _vertexBuffer.insert(_vertexBuffer.end(), boxVertex, boxVertex + sizeof(boxVertex) / sizeof(float));
+    }
+
+    void addLightVertex()
+    {
+        float lightVertex[] = {
+            -0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, -0.1f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f,  0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, -0.1f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, -0.1f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.1f,  0.0f, -0.1f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, -0.1f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        };
+        _vertexBuffer.insert(_vertexBuffer.end(), lightVertex, lightVertex + sizeof(lightVertex) / sizeof(float));
+    }
+
+    void addCubeVertex()
+    {
+        float cubeVertex[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+        };
+        _vertexBuffer.insert(_vertexBuffer.end(), cubeVertex, cubeVertex + sizeof(cubeVertex)/sizeof(float));
     }
 };
 

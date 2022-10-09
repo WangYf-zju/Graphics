@@ -12,8 +12,8 @@ PreviewWidget::PreviewWidget(QWidget *parent, Qt::WindowFlags flag)
     this->setWindowFlag(Qt::WindowStaysOnBottomHint, true);
     this->mousePressButton = Qt::NoButton;
     //mManager.addModel(new gm::Sphere<float>(0.0f, 0.0f, 0.0f, 1.0f));
-    mManager.addModel(new gm::Cube<float>(2.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));
-    mManager.addModel(new gm::Cylinder<float>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f));
+    //mManager.addModel(new gm::Cube<float>(2.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f));
+    //mManager.addModel(new gm::Cylinder<float>(0.0f, 0.0f, 0.0f, 1.0f, 1.0f));
 }
 
 PreviewWidget::~PreviewWidget()
@@ -31,7 +31,7 @@ void PreviewWidget::initializeGL()
     f->glGenBuffers(1, &VBO);
     f->glGenBuffers(1, &EBO);
     f->glEnable(GL_DEPTH_TEST);
-    bindBuffer();
+    rebindBuffer();
 }
 
 
@@ -47,7 +47,8 @@ void PreviewWidget::paintGL()
     f->glUniform1f(f->glGetUniformLocation(modelShader.ID, "material.shininess"), 32.0f);
     
     addLight();
-    glm::mat4 projection = glm::perspective(
+    glm::mat4 projection;
+    projection = glm::perspective(
         glm::radians(camera.getZoom()), 
         (float)this->width() / (float)this->height(), 
         0.1f, 
@@ -69,8 +70,9 @@ void PreviewWidget::paintGL()
     worldShader.setMat4("view", view)
         ->setMat4("projection", projection)
         ->setMat4("model", glm::mat4(1.0f));
-    drawZ0Plane();
-    drawAxis();
+    if (_showPlane) drawZ0Plane();
+    if (_showAxis) drawAxis();
+    drawLight();
     drawBoundingBox();
     f->glBindVertexArray(0);
 }
@@ -128,7 +130,7 @@ void PreviewWidget::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void PreviewWidget::bindBuffer()
+void PreviewWidget::rebindBuffer()
 {
     f->glBindVertexArray(VAO);
     f->glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -159,7 +161,6 @@ void PreviewWidget::drawAxis()
 void PreviewWidget::drawZ0Plane()
 {
     worldShader.setMat4("model", glm::mat4(1.0f));
-
     worldShader.setVec4("purity", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
     f->glDrawArrays(GL_LINES, Z0_PLANE_VERTEX_START, Z0_PLANE_VERTEX_COUNT);
 }
@@ -167,6 +168,10 @@ void PreviewWidget::drawZ0Plane()
 
 void PreviewWidget::drawModel(ModelObject & model)
 {
+    if (model.select)
+    {
+        boundingBoxMatrix.push_back(model.modelMatrix);
+    }
     if (model.visible)
     {
         modelShader.setMat4("model", model.modelMatrix);
@@ -196,13 +201,8 @@ void PreviewWidget::drawModel(ModelObject & model)
             f->glDrawArrays(
                 GL_TRIANGLES,
                 model.vertexStartIndex / EACH_VERTEX_SIZE,
-                model.vertexSize / (3 * EACH_VERTEX_SIZE)
+                model.vertexSize / EACH_VERTEX_SIZE
             );
-        }
-        if (model.select)
-        {
-            // drawBoundingBox();
-            boundingBoxMatrix.push_back(model.modelMatrix);
         }
     }
 }
@@ -299,4 +299,34 @@ void PreviewWidget::addLight()
 
 void PreviewWidget::drawLight()
 {
+    auto pointLight = lManager.getPointLights();
+    auto spotLight = lManager.getSpotLights();
+    f->glLineWidth(2.0f);
+    worldShader.setVec4("purity", glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+    for (auto it = pointLight->begin(); it != pointLight->end(); it++)
+    {
+        worldShader.setMat4("model", glm::translate(glm::mat4(1.0f), it->position));
+        if (it->isSelect) 
+        {
+            worldShader.setVec4("purity", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+            f->glDrawArrays(GL_LINES, LIGHT_VERTEX_START, LIGHT_VERTEX_COUNT);
+            worldShader.setVec4("purity", glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+        }
+        else if (it->visible)
+            f->glDrawArrays(GL_LINES, LIGHT_VERTEX_START, LIGHT_VERTEX_COUNT);
+    }
+    worldShader.setVec4("purity", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    for (auto it = spotLight->begin(); it != spotLight->end(); it++)
+    {
+        worldShader.setMat4("model", glm::translate(glm::mat4(1.0f), it->position));
+        if (it->isSelect)
+        {
+            worldShader.setVec4("purity", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+            f->glDrawArrays(GL_LINES, LIGHT_VERTEX_START, LIGHT_VERTEX_COUNT);
+            worldShader.setVec4("purity", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+        }
+        else if (it->visible)
+            f->glDrawArrays(GL_LINES, LIGHT_VERTEX_START, LIGHT_VERTEX_COUNT);
+    }
+    f->glLineWidth(1.0f);
 }

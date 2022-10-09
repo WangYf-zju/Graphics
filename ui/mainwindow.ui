@@ -156,26 +156,22 @@ border-right: 5px solid #ccc</string>
     <property name="title">
      <string>视图</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menuModel">
-    <property name="title">
-     <string>模型</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuRender">
-    <property name="title">
-     <string>渲染</string>
-    </property>
+    <addaction name="frontView"/>
+    <addaction name="backView"/>
+    <addaction name="leftView"/>
+    <addaction name="rightView"/>
+    <addaction name="topView"/>
+    <addaction name="bottomView"/>
    </widget>
    <widget class="QMenu" name="menuSetting">
     <property name="title">
      <string>设置</string>
     </property>
+    <addaction name="axis"/>
+    <addaction name="plane"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
-   <addaction name="menuModel"/>
-   <addaction name="menuRender"/>
    <addaction name="menuSetting"/>
   </widget>
   <action name="action">
@@ -201,6 +197,68 @@ border-right: 5px solid #ccc</string>
   <action name="action_6">
    <property name="text">
     <string>导出</string>
+   </property>
+  </action>
+  <action name="frontView">
+   <property name="text">
+    <string>前视图</string>
+   </property>
+  </action>
+  <action name="backView">
+   <property name="text">
+    <string>后视图</string>
+   </property>
+  </action>
+  <action name="leftView">
+   <property name="text">
+    <string>左视图</string>
+   </property>
+  </action>
+  <action name="rightView">
+   <property name="text">
+    <string>右视图</string>
+   </property>
+  </action>
+  <action name="topView">
+   <property name="text">
+    <string>顶视图</string>
+   </property>
+  </action>
+  <action name="bottomView">
+   <property name="text">
+    <string>底视图</string>
+   </property>
+  </action>
+  <action name="perspective">
+   <property name="text">
+    <string>透视投影</string>
+   </property>
+  </action>
+  <action name="ortho">
+   <property name="text">
+    <string>正交投影</string>
+   </property>
+  </action>
+  <action name="axis">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>坐标轴</string>
+   </property>
+  </action>
+  <action name="plane">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>平面</string>
    </property>
   </action>
  </widget>

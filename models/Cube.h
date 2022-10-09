@@ -33,7 +33,7 @@ public:
         rotateTo(pitch, yaw, roll);
         translate(x, y, z);
     }
-    constexpr size_t vertexSize() override { return sizeof(_vertex); }
+    constexpr size_t vertexSize() override { return sizeof(_vertex) / sizeof(float); }
     constexpr size_t indicesSize() override { return 0; }
     inline _Scalar * getVertex() override { return _vertex; }
     inline unsigned int * getIndices() override { return nullptr; }
