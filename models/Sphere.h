@@ -4,7 +4,7 @@
 namespace gm {
 
 template<typename _Scalar, int SEGX = 16, int SEGY = 8>
-class Sphere : public BaseModel<Sphere<_Scalar>>
+class Sphere : public BaseModel<Sphere<_Scalar, SEGX, SEGY>>
 {
 public:
     typedef _Scalar Scalar;

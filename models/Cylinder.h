@@ -4,7 +4,7 @@
 namespace gm {
 
     template<typename _Scalar, int SEG = 16>
-    class Cylinder : public BaseModel<Cylinder<_Scalar>>
+    class Cylinder : public BaseModel<Cylinder<_Scalar, SEG>>
     {
     public:
         typedef _Scalar Scalar;

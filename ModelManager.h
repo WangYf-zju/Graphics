@@ -242,7 +242,6 @@ public:
 
     void save_json_file(QString filename, TextureManager *t)
     {
-        //保存顶点坐标信息
         QJsonObject  modelObj;
         QJsonArray name;
         for (int i = 0; i < _models.size(); i++)
@@ -250,7 +249,7 @@ public:
             QJsonObject model;
             QJsonArray a;
             ModelObject m = _models[i];
-            //坐标旋转等信息
+
             for (int j = 0; j < 9; j++)
             {
                 a.append(m.modelTrans[j]);
@@ -273,8 +272,7 @@ public:
             return;
 
         QTextStream stream(&file);
-        stream.setCodec("UTF-8");		// 设置写入编码是UTF8
-        // 写入文件
+        stream.setCodec("UTF-8");
         stream << doc.toJson();
         file.close();
 
@@ -287,13 +285,12 @@ public:
         if (!file.open(QFile::ReadOnly | QFile::Text))
             return;
         QTextStream stream(&file);
-        stream.setCodec("UTF-8");		// 设置读取编码是UTF8
+        stream.setCodec("UTF-8");
         QString str = stream.readAll();
 
         file.close();
         QJsonParseError jsonError;
         QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8(), &jsonError);
-        // 判断是否解析失败
         if (jsonError.error != QJsonParseError::NoError && !doc.isNull())
             return;
         QJsonObject modelObj = doc.object();

@@ -30,10 +30,10 @@ public:
     virtual size_t indicesSize() = 0;
 
     //void transform(Scalar x, Scalar y, Scalar z, ...) = 0;
-
+    
     inline virtual void render(float * vertex, unsigned int * indices, int start) override
     {
-        if (this->indicesSize() > 0 && this->getIndices() != nullptr) {
+        if (this->indicesSize() > 0 && static_cast<_Derived*>(this)->getIndices() != nullptr) {
             if (start == 0)
             {
                 const size_t n = indicesSize() * sizeof(int);
