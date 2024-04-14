@@ -4,6 +4,8 @@
 
 ![](ui.png)
 
+![](ui2.png)
+
 ## Build Steps
 
 1. Download [glm](https://github.com/Groovounet/glm) and copy folder "glm" to current directory or system include directory.
